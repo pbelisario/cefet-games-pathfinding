@@ -13,6 +13,7 @@ import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder.Metrics;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import java.util.Iterator;
 
@@ -108,11 +109,18 @@ public class Agent {
  
             @Override 
             public float estimate(TileNode n, TileNode n1) { 
-                throw new UnsupportedOperationException("Deveria ter retornado "
-                        + "um valor para a heurística no arquivo "
-                        + "Agent.java:107, mas o professor resolveu explodir "
-                        + "o programa e deixar você consertar ;)"); 
-            } 
+                // return 0.0f; // Dijkstra 
+                // return n.getPosition().dst(n1.getPosition()); // Distancia Euclidiana Simples não admissivel
+                Vector2 v1 = new Vector2 (n.getPosition().x/LevelManager.tileWidth, n.getPosition().y/LevelManager.tileHeight);
+                Vector2 v2 = new Vector2 (n1.getPosition().x/LevelManager.tileWidth, n1.getPosition().y/LevelManager.tileHeight);
+                // return v1.dst(v2); // Distancia Euclidiana Simples admissivel
+                Vector2 Diagonal = new Vector2(Math.abs(n.getPosition().x - n1.getPosition().x)/LevelManager.tileWidth, Math.abs(n.getPosition().y - n1.getPosition().y)/LevelManager.tileHeight);
+                float CustoLateral =  v1.dst(v2);
+                
+                return (float) (CustoLateral * (Diagonal.x + Diagonal.y) +  (CustoLateral * Math.sqrt(2) - 2 * CustoLateral) * Math.min(Diagonal.x, Diagonal.y));
+                
+                
+            }
         }, path); 
         pathIterator = path.iterator();
     }
